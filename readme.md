@@ -9,16 +9,7 @@
 
 # Install dependencies
 ```$
-$ pip3 install regex
-```
-```
-$ pip3 install tk
-```
-```
-$ pip3 install googletrans
-```
-```
-$ pip3 install nltk
+$ pip3 install -r requirements.txt
 ```
 
 # Using
