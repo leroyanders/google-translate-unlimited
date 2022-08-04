@@ -1,5 +1,5 @@
 # About
-<p>This python script allows you translate any text in any language directly by Google Translate, without using paid API servicesces. <br>
+<p>This python script allows you translate any text in any language directly by Google Translate, without using paid API services. <br>
 
 + <b>No limits.</b>
 + <b>Fully free.</b>
@@ -23,7 +23,7 @@ $ pip3 install nltk
 
 # Using
 ```python
-import Translator from module
+from .module import Translator
 
 tr = Translator('Hello, World!', src='en', dest='fr')
 translated_text = tr.translated_text
