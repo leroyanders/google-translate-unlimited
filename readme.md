@@ -21,12 +21,6 @@ $ pip3 install -r requirements.txt
 </table>
 </div>
 
-<style>
-.foo table {
-  width: 100%;
-}
-</style>
-
 # Using
 ```python
 from .module import Translator
