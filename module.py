@@ -1,9 +1,7 @@
-from re import L
-from tkinter import N
 from googletrans import Translator
 from nltk import tokenize
 
-class Translator:
+class UnlimitedTranslator:
     def __init__(self, text_, src=None, dest='en'):
       
         # Tokenize source and assign translator
