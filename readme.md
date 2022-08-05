@@ -23,12 +23,17 @@ $ pip3 install -r requirements.txt
 
 # Using
 ```python
-from .module import Translator
+import module
+import nltk
 
-tr = Translator('Hello, World!', src='en', dest='fr')
+# install punkt package
+nltk.download('punkt')
+
+tr = module.UnlimitedTranslator(text_='Hello, World!', src='en', dest='fr')
 translated_text = tr.translated_text
 
-print(f'Result: {translated_text}');
+if __name__ == '__main__':
+    print(f'Result: {translated_text}');
 
 ```
 The result will be:
