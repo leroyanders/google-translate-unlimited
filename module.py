@@ -1,6 +1,5 @@
 from googletrans import Translator
 from nltk import tokenize
-from deep_translator import GoogleTranslator
 
 class UnlimitedTranslator:
     def __init__(self, text_, src=None, dest='en'):
@@ -8,11 +7,11 @@ class UnlimitedTranslator:
         # Tokenize source and assign translator
         self.translated_text = ''
         self.token = tokenize.sent_tokenize(text_)
-        self.translator = GoogleTranslator(source=src, target=dest)
+        self.translator = Translator()
         
         # Limits and offsets
         list_of_lines = []
-        max_length = 5000
+        max_length = 15000
         
         # If length more than limit(15000), trim in parts and push them to array
         if len(text_) > max_length:
@@ -25,11 +24,11 @@ class UnlimitedTranslator:
             # Will translate all parts of text
             for line in list_of_lines:
                 if src is None:
-                    self.translated_text += self.translator.translate(line)
+                    self.translated_text += self.translator.translate(line, dest=dest).text
                 else:
-                    self.translated_text += self.translator.translate(line)
+                    self.translated_text += self.translator.translate(line, dest=dest, src=src).text
         else:
             if src is None:
-                self.translated_text += self.translator.translate(text_)
+                self.translated_text += self.translator.translate(text_, dest=dest).text
             else:
-                self.translated_text += self.translator.translate(text_)
+                self.translated_text += self.translator.translate(text_, dest=dest, src=src).text
