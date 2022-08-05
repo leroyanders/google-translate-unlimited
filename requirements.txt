@@ -1,4 +1,4 @@
 tk==0.1.0
 regex==2022.7.25
-googletrans==2.3.0
+googletrans==4.0.0-rc1
 nltk==3.7
