@@ -1,5 +1,5 @@
 tk==0.1.0
 regex==2022.7.25
-googletrans==4.0.0-rc1
+googletrans==3.1.0a0
 nltk==3.7
 deep-translator==1.8.3
