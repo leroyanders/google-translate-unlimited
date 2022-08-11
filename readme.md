@@ -21,13 +21,14 @@ $ pip3 install -r requirements.txt
 </table>
 </div>
 
+# Install punkt
+```console
+python <<< 'import nltk' && python <<< 'nltk.download("punkt")'
+```
+
 # Using
 ```python
 import module
-import nltk
-
-# install punkt package
-nltk.download('punkt')
 
 tr = module.UnlimitedTranslator(text_='Hello, World!', src='en', dest='fr')
 translated_text = tr.translated_text
