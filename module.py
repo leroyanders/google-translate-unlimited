@@ -92,12 +92,19 @@ class UnlimitedTranslator:
         lang = lang.lower()
         return LANG_CODE_MAP.get(lang, lang)
 
+    def _get_lang_id(self, lang: str) -> int:
+        """Return the token ID used for the given language code."""
+        if hasattr(self.tokenizer, "lang_code_to_id"):
+            return self.tokenizer.lang_code_to_id[lang]
+        return self.tokenizer.convert_tokens_to_ids(lang)
+
     def _translate_sentence(self, sentence: str) -> str:
         inputs = self.tokenizer(sentence, return_tensors="pt")
         with torch.no_grad():
+            bos_token_id = self._get_lang_id(self.dest)
             generated_tokens = self.model.generate(
                 **inputs,
-                forced_bos_token_id=self.tokenizer.lang_code_to_id[self.dest],
+                forced_bos_token_id=bos_token_id,
                 max_length=1024,
             )
         return self.tokenizer.decode(generated_tokens[0], skip_special_tokens=True)
