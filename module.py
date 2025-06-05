@@ -47,7 +47,7 @@ class UnlimitedTranslator:
         with torch.no_grad():
             generated_tokens = self.model.generate(
                 **inputs,
-                forced_bos_token_id=self.tokenizer.lang_code_to_id[self.dest],
+                forced_bos_token_id=self.tokenizer.convert_tokens_to_ids(self.dest),
                 src_lang=self.src,
                 max_length=1024,
             )
