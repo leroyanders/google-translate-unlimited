@@ -41,3 +41,14 @@ if __name__ == '__main__':
 ```
 The result will be:
 ``` Result: Bonjour le monde! ```
+
+# Prompt-based translator
+
+You can also use an open chat model that accepts custom prompts:
+
+```python
+from module import PromptTranslator
+
+tr = PromptTranslator(text="Hello, World!", dest="fr")
+print(tr.translated_text)
+```
