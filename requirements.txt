@@ -1,5 +1,7 @@
 tk==0.1.0
 regex==2022.7.25
-googletrans==3.1.0a0
 nltk==3.7
-deep-translator==1.8.3
+langdetect==1.0.9
+transformers==4.52.4
+sentencepiece==0.2.0
+torch
