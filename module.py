@@ -2,7 +2,12 @@ from typing import Optional, Dict
 
 from langdetect import detect
 from nltk import tokenize
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+from transformers import (
+    AutoTokenizer,
+    AutoModelForSeq2SeqLM,
+    AutoModelForCausalLM,
+    pipeline,
+)
 import torch
 
 # Mapping from ISO 639-1 codes to NLLB-200 language codes
@@ -75,6 +80,33 @@ LANG_CODE_MAP: Dict[str, str] = {
 
 MODEL_NAME = "facebook/nllb-200-distilled-600M"
 
+# Default chat-oriented model used for prompt-based translation
+CHAT_MODEL = "HuggingFaceH4/zephyr-7b-beta"
+
+# Prompt template for the chat model
+PROMPT_TEMPLATE = """
+**Objective:** Translate the text into {lng}, preserving the original tone, style, and context.
+
+**Translation Steps:**
+1. **Identify Language and Emotional Tone:** Determine the source language and assess its emotional tone or informal style. Use English as an intermediary for better understanding if translating from Asian languages.
+2. **Comprehensive Translation:** Translate all non-{lng} text fully into the target language, ensuring the translation captures the original message and any emotional nuances (e.g., urgency, irony).
+3. **Retain Informal Elements:** Preserve the original emojis and symbols to maintain the text's expressive and informal nature.
+4. **Proofread for Accuracy and Flow:** Review to ensure grammatical correctness and that the translated text reads naturally and contextually in {lng}.
+5. **Ensure Completeness and Correct Formatting:** Convert dates, times, and numbers to adhere to {lng}'s conventional formats.
+
+**Instructions:**
+- Begin the translation output with flag emojis indicating source ➝ target languages, followed by a line break.
+- Maintain original tags (e.g., <url>) and formatting within the translation.
+- Output only the translated text, excluding any additional comments or notes.
+- Translate all sections not originally in {lng}, ensuring no text remains untranslated if it's not in the target language.
+- Format dates and numbers according to the target language's conventions, but keep the original form in parentheses.
+- Translate everything and transliterate untranslatable items, placing the original in parentheses. Example: Эппл(Apple), Монхан(モンハン)
+
+**Format Example:**
+🇺🇸➝🇺🇦
+{text}
+"""
+
 
 class UnlimitedTranslator:
     """Translate large texts using the NLLB neural model."""
@@ -113,3 +145,35 @@ class UnlimitedTranslator:
         sentences = tokenize.sent_tokenize(self.text)
         outputs = [self._translate_sentence(sent) for sent in sentences]
         return " ".join(outputs)
+
+
+class PromptTranslator:
+    """Translate text using a chat-oriented model and a prompt."""
+
+    def __init__(
+        self,
+        text: str,
+        dest: str = "en",
+        model_name: str = CHAT_MODEL,
+        prompt_template: str = PROMPT_TEMPLATE,
+    ) -> None:
+        self.text = text
+        self.dest = dest
+        self.prompt_template = prompt_template
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        self.model = AutoModelForCausalLM.from_pretrained(model_name)
+        device = 0 if torch.cuda.is_available() else -1
+        self.generator = pipeline(
+            "text-generation",
+            model=self.model,
+            tokenizer=self.tokenizer,
+            device=device,
+        )
+        self.translated_text = self._translate_text()
+
+    def _translate_text(self) -> str:
+        prompt = self.prompt_template.format(lng=self.dest, text=self.text)
+        output = self.generator(prompt, max_new_tokens=512, do_sample=False)[0][
+            "generated_text"
+        ]
+        return output[len(prompt) :].strip()
