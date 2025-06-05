@@ -1,5 +1,5 @@
 # About
-<p>This python script allows you translate any text in any language directly by Google Translate, without using paid API services. <br>
+<p>This python script translates text of any length using the open-source <a href="https://github.com/facebookresearch/nllb">NLLB</a> neural model instead of Google services.<br>
 
 + <b>No limits.</b>
 + <b>Fully free.</b>
@@ -11,6 +11,8 @@
 ```bash
 pip3 install -r requirements.txt
 ```
+The model requires the PyTorch backend. If it is not present in your environment,
+install it following the instructions on <https://pytorch.org/>.
 
 # Languages list
 <div class="foo">
