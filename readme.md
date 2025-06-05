@@ -14,6 +14,11 @@ pip3 install -r requirements.txt
 The model requires the PyTorch backend. If it is not present in your environment,
 install it following the instructions on <https://pytorch.org/>.
 
+On Apple Silicon machines (e.g., M1/M2 Macs), install the PyTorch build with
+[MPS](https://pytorch.org/docs/stable/notes/mps.html) support to offload
+computation to the GPU. The translators in this project automatically use MPS
+when it is available, reducing CPU usage.
+
 # Languages list
 <div class="foo">
 <table data-sortable="" data-sortable-initialized="true" width="100%">

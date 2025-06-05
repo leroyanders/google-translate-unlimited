@@ -111,13 +111,27 @@ PROMPT_TEMPLATE = """
 class UnlimitedTranslator:
     """Translate large texts using the NLLB neural model."""
 
-    def __init__(self, text: str, src: Optional[str] = None, dest: str = "en") -> None:
+    def __init__(
+        self,
+        text: str,
+        src: Optional[str] = None,
+        dest: str = "en",
+        device: Optional[str] = None,
+    ) -> None:
         self.text = text
         self.src = self._resolve_lang(src or detect(text))
         self.dest = self._resolve_lang(dest)
+        if device is None:
+            if torch.backends.mps.is_available():
+                device = "mps"
+            elif torch.cuda.is_available():
+                device = "cuda"
+            else:
+                device = "cpu"
+        self.device = torch.device(device)
         self.tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
         self.tokenizer.src_lang = self.src
-        self.model = AutoModelForSeq2SeqLM.from_pretrained(MODEL_NAME)
+        self.model = AutoModelForSeq2SeqLM.from_pretrained(MODEL_NAME).to(self.device)
         self.translated_text = self._translate_text()
 
     def _resolve_lang(self, lang: str) -> str:
@@ -131,7 +145,7 @@ class UnlimitedTranslator:
         return self.tokenizer.convert_tokens_to_ids(lang)
 
     def _translate_sentence(self, sentence: str) -> str:
-        inputs = self.tokenizer(sentence, return_tensors="pt")
+        inputs = self.tokenizer(sentence, return_tensors="pt").to(self.device)
         with torch.no_grad():
             bos_token_id = self._get_lang_id(self.dest)
             generated_tokens = self.model.generate(
@@ -156,18 +170,27 @@ class PromptTranslator:
         dest: str = "en",
         model_name: str = CHAT_MODEL,
         prompt_template: str = PROMPT_TEMPLATE,
+        device: Optional[str] = None,
     ) -> None:
         self.text = text
         self.dest = dest
         self.prompt_template = prompt_template
+        if device is None:
+            if torch.backends.mps.is_available():
+                device = "mps"
+            elif torch.cuda.is_available():
+                device = "cuda"
+            else:
+                device = "cpu"
+        self.device = torch.device(device)
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-        self.model = AutoModelForCausalLM.from_pretrained(model_name)
-        device = 0 if torch.cuda.is_available() else -1
+        self.model = AutoModelForCausalLM.from_pretrained(model_name).to(self.device)
+        pipe_device = 0 if self.device.type != "cpu" else -1
         self.generator = pipeline(
             "text-generation",
             model=self.model,
             tokenizer=self.tokenizer,
-            device=device,
+            device=pipe_device,
         )
         self.translated_text = self._translate_text()
 
