@@ -1,5 +1,5 @@
 # About
-<p>This python script translates text of any length using the open-source <a href="https://github.com/facebookresearch/nllb">NLLB</a> neural model instead of Google services.<br>
+<p>This python script translates text of any length using an open-source <a href="https://huggingface.co/docs/transformers/en/model_doc/openai-gpt">GPT model</a> with a custom prompt.<br>
 
 + <b>No limits.</b>
 + <b>Fully free.</b>
@@ -37,7 +37,7 @@ python <<< 'import nltk' && python <<< 'nltk.download("punkt")'
 ```python
 import module
 
-tr = module.UnlimitedTranslator(text='Hello, World!', src='en', dest='fr')
+tr = module.PromptTranslator(text='Hello, World!', dest='fr')
 translated_text = tr.translated_text
 
 if __name__ == '__main__':
@@ -47,15 +47,11 @@ if __name__ == '__main__':
 The result will be:
 ``` Result: Bonjour le monde! ```
 
-You can also run the provided `example.py` script from the command line. Use the
-`--engine` option to choose between the lightweight NLLB translator and the more
-resource intensive prompt-based model:
+You can run the provided `example.py` script from the command line:
 
 ```bash
-python example.py "Hello, world!" --dest fr --engine prompt
+python example.py "Hello, world!" --dest fr
 ```
-
-# Prompt-based translator
 
 # Prompt-based translator
 
@@ -67,5 +63,5 @@ from module import PromptTranslator
 tr = PromptTranslator(text="Hello, World!", dest="fr")
 print(tr.translated_text)
 ```
-Loading the default chat model (`HuggingFaceH4/zephyr-7b-beta`) may require
-several gigabytes of RAM and is best run on a machine with a GPU.
+Loading the default chat model (`openai-community/openai-gpt`) is lightweight
+and can run on modest hardware.
