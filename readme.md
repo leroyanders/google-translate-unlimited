@@ -1,5 +1,5 @@
 # About
-<p>This python script translates text of any length using an open-source <a href="https://huggingface.co/docs/transformers/en/model_doc/openai-gpt">GPT model</a> with a custom prompt.<br>
+<p>This python script translates text using an open-source <a href="https://huggingface.co/docs/transformers/en/model_doc/openai-gpt">GPT model</a> with a custom prompt.<br>
 
 + <b>No limits.</b>
 + <b>Fully free.</b>
@@ -64,4 +64,5 @@ tr = PromptTranslator(text="Hello, World!", dest="fr")
 print(tr.translated_text)
 ```
 Loading the default chat model (`openai-community/openai-gpt`) is lightweight
-and can run on modest hardware.
+and can run on modest hardware. The model has a 512-token context window, so
+large prompts are automatically truncated.
