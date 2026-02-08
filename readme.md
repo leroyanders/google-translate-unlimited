@@ -19,6 +19,19 @@ On Apple Silicon machines (e.g., M1/M2 Macs), install the PyTorch build with
 computation to the GPU. The translators in this project automatically use MPS
 when it is available, reducing CPU usage.
 
+## Python 3.14 note (sentencepiece)
+On Python 3.14, `sentencepiece` does not ship prebuilt wheels, so pip tries to
+build it from source and can fail unless your system has build tools installed.
+This project uses the fast tokenizer path by default, so `sentencepiece` is
+optional on 3.14. If you want it anyway, install the build tools and then
+install `sentencepiece` from source:
+
+```bash
+brew install cmake pkg-config sentencepiece coreutils
+export PKG_CONFIG_PATH="$(brew --prefix sentencepiece)/lib/pkgconfig:$PKG_CONFIG_PATH"
+python3 -m pip install sentencepiece --no-binary=:all:
+```
+
 # Languages list
 <div class="foo">
 <table data-sortable="" data-sortable-initialized="true" width="100%">

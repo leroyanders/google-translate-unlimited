@@ -5,6 +5,7 @@ __pycache__/
 # Virtual environments
 env/
 venv/
+.idea/
 
 # MacOS metadata
 .DS_Store
