@@ -20,6 +20,13 @@ class ModuleTests(unittest.TestCase):
         self.assertIn(text, prompt)
         self.assertTrue(prompt.endswith(text))
 
+    def test_generate_prompt_includes_source_language_when_provided(self):
+        text = "Bonjour"
+        prompt = module.generate_prompt(text, "en", src="fr")
+
+        self.assertIn("Translate the text from fr into en", prompt)
+        self.assertTrue(prompt.endswith(text))
+
     def test_split_text_empty_string(self):
         tokenizer = DummyTokenizer()
         chunks = module.split_text_by_tokens("", tokenizer, max_tokens=10)
@@ -51,6 +58,29 @@ class LongTextTranslationTests(unittest.TestCase):
         translated = translator._translate_text()
 
         self.assertEqual(translated, long_text.upper())
+
+
+class EchoTranslator(module.PromptTranslator):
+    def __init__(self, text: str, max_chunk_tokens: int) -> None:
+        self.text = text
+        self.dest = "en"
+        self.tokenizer = DummyTokenizer()
+        self._context_window = 128
+        self._prompt_overhead_tokens = 10
+        self._max_chunk_tokens = max_chunk_tokens
+
+    def _translate_chunk(self, chunk: str) -> str:
+        return chunk
+
+
+class SymbolTranslationTests(unittest.TestCase):
+    def test_translate_text_handles_symbols_and_length(self):
+        text = ("Hi 😀 Привет こんにちは\n" * 40) + "Symbols: <> & © ✓ — end."
+        translator = EchoTranslator(text=text, max_chunk_tokens=9)
+
+        translated = translator._translate_text()
+
+        self.assertEqual(translated, text)
 
 
 if __name__ == "__main__":

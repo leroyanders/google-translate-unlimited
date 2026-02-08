@@ -33,6 +33,37 @@ class ChunkingTests(unittest.TestCase):
         self.assertEqual("".join(chunks), text)
         self.assertTrue(all(len(chunk) <= 25 for chunk in chunks))
 
+    def test_split_text_falls_back_when_tokenizer_fails(self):
+        class ErrorTokenizer:
+            def encode(self, text: str, add_special_tokens: bool = False):
+                raise ValueError("nope")
+
+        tokenizer = ErrorTokenizer()
+        text = "Emoji 😀 test ✓ — end."
+
+        chunks = module.split_text_by_tokens(text, tokenizer, max_tokens=4)
+
+        self.assertEqual("".join(chunks), text)
+        self.assertTrue(all(len(chunk) <= 4 for chunk in chunks))
+
+    def test_split_text_handles_emoji_only(self):
+        tokenizer = DummyTokenizer()
+        text = "😀" * 53
+
+        chunks = module.split_text_by_tokens(text, tokenizer, max_tokens=7)
+
+        self.assertEqual("".join(chunks), text)
+        self.assertTrue(all(len(chunk) <= 7 for chunk in chunks))
+
+    def test_split_text_handles_combining_marks(self):
+        tokenizer = DummyTokenizer()
+        text = ("e\u0301" * 20) + "끝"
+
+        chunks = module.split_text_by_tokens(text, tokenizer, max_tokens=5)
+
+        self.assertEqual("".join(chunks), text)
+        self.assertTrue(all(len(chunk) <= 5 for chunk in chunks))
+
 
 class DummyTranslator(module.PromptTranslator):
     def __init__(self, text: str, max_chunk_tokens: int) -> None:
